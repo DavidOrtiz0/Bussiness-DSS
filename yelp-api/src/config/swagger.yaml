@@ -1,0 +1,146 @@
+openapi: 3.0.0
+info:
+  title: Yelp DSS API
+  description: API para análisis de negocios usando YelpDB
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:4000/api
+
+paths:
+  /business:
+    get:
+      summary: Listar negocios
+      parameters:
+        - name: city
+          in: query
+          schema: { type: string }
+          description: Filtrar por ciudad
+        - name: category
+          in: query
+          schema: { type: string }
+          description: Filtrar por categoría
+      responses:
+        "200":
+          description: Lista de negocios
+
+  /business/{id}:
+    get:
+      summary: Detalle de un negocio
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Información del negocio
+
+  /review/business/{businessId}:
+    get:
+      summary: Reseñas de un negocio
+      parameters:
+        - name: businessId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Lista de reseñas
+
+  /review/business/{businessId}/avg:
+    get:
+      summary: Promedio de estrellas de un negocio
+      parameters:
+        - name: businessId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Promedio de estrellas
+
+  /user/{id}:
+    get:
+      summary: Detalle de usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Datos del usuario
+
+  /user:
+    get:
+      summary: Top usuarios activos
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Lista de usuarios
+
+  /tip/business/{businessId}:
+    get:
+      summary: Tips de un negocio
+      parameters:
+        - name: businessId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Lista de tips
+
+  /checkin/business/{businessId}:
+    get:
+      summary: Número de checkins de un negocio
+      parameters:
+        - name: businessId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Número de checkins
+
+  /analysis/location:
+    get:
+      summary: Análisis de ubicación
+      parameters:
+        - name: city
+          in: query
+          schema: { type: string }
+        - name: category
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Negocios encontrados en ciudad y categoría
+
+  /analysis/demand:
+    get:
+      summary: Análisis de demanda
+      parameters:
+        - name: businessId
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Palabras clave frecuentes
+
+  /analysis/gaps:
+    get:
+      summary: Análisis de brechas oferta-demanda
+      parameters:
+        - name: city
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Ratio reseñas vs negocios
