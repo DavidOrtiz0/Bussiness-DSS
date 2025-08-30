@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { Dashboard } from "../dashboard/dashboard";
+import { RouterLink } from '@angular/router';
+
 
 @Component({
   selector: 'app-navegations',
   standalone: true, 
-  imports: [Dashboard],
+  imports: [RouterLink],
   templateUrl: './navegations.html',
   styleUrl: './navegations.css'
 })
