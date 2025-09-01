@@ -27,7 +27,7 @@ cd yelp-dss-api
 # Instalar dependencias
 npm install
 
-
+```
 ---
 
 ## 🔧 Requisitos previos
@@ -57,7 +57,7 @@ yelp-dss-api/
 ├── README.md            # Documentación del proyecto
 ├── package.json         # Dependencias y scripts
 └── server.js            # Punto de entrada del servidor
-
+```
 
 ## 🌐 Endpoints principales
 
@@ -143,34 +143,6 @@ El sistema sigue una arquitectura por capas, organizada en **tres subsistemas pr
 - API RESTful con endpoints consistentes para cada recurso  
 
 ---
-
-## 📌 Diagrama de arquitectura
-
-```mermaid
-flowchart TD
-    subgraph UI[🖥️ User Interface Subsystem]
-        Swagger[Swagger UI / API Docs]
-        Client[Frontend / Postman / Usuario]
-    end
-
-    subgraph MODEL[⚙️ Model Subsystem]
-        Controllers[Controllers & Routes]
-        Analysis[Analysis (Ubicación, Demanda, Brechas)]
-        Export[Export CSV/PDF]
-    end
-
-    subgraph DATA[📊 Data Subsystem]
-        DB[(MongoDB - YelpDB)]
-        Upload[Dataset Upload + Validation]
-    end
-
-    Client -->|HTTP Requests| Controllers
-    Swagger --> Controllers
-
-    Controllers --> Analysis
-    Controllers --> Export
-    Controllers --> DB
-    Upload --> DB
 
 
 ## 🧪 Pruebas
