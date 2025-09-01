@@ -1,27 +1,48 @@
-const User = require("../models/user.model");
+/**
+ * Controlador de Usuarios
+ * -----------------------
+ * - Obtener detalle de usuario por ID
+ * - Listar los usuarios más activos (ranking por cantidad de reseñas)
+ *
+ * ✅ Compatible con datasetSelector:
+ *    Si el cliente pasa ?temp=true → se consulta en colecciones temporales (temp_user)
+ *    Si no, se consulta en colecciones reales (user)
+ */
 
-// Detalle usuario sin cargar todo
-exports.getUserById = async (req, res) => {
+exports.getUserById = async (req, res, next) => {
   try {
-    const user = await User.findOne({ user_id: req.params.id })
+    // Seleccionar modelo según datasetSelector (inyectado en req.db.user)
+    const UserModel = req.db.user;
+
+    const user = await UserModel.findOne({ user_id: req.params.id })
       .select("user_id name review_count useful funny cool elite");
-    if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    if (!user) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
     res.json(user);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err); // delega al middleware centralizado de errores
   }
 };
 
-// Top usuarios activos (para análisis de reseñas)
-exports.getTopUsers = async (req, res) => {
+/**
+ * Listar usuarios más activos (top N)
+ * @query limit (default 5)
+ */
+exports.getTopUsers = async (req, res, next) => {
   try {
     const { limit = 5 } = req.query;
-    const users = await User.find({})
+    const UserModel = req.db.user;
+
+    const users = await UserModel.find({})
       .sort({ review_count: -1 })
-      .limit(parseInt(limit))
+      .limit(parseInt(limit, 10))
       .select("user_id name review_count");
+
     res.json(users);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };

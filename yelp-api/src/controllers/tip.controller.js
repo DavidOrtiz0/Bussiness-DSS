@@ -1,12 +1,23 @@
-const Tip = require("../models/tip.model");
+/**
+ * Controlador de Tips
+ * - Permite obtener tips asociados a un negocio
+ *
+ * ✅ Refactor:
+ * Usa `req.db.tip` en lugar del modelo estático,
+ * lo que permite alternar entre colecciones reales y temporales (?temp=true).
+ */
 
-// Tips de un negocio
-exports.getTipsByBusiness = async (req, res) => {
+ /**
+  * Obtener tips de un negocio
+  * @route GET /api/tip/business/:businessId?temp=true
+  */
+exports.getTipsByBusiness = async (req, res, next) => {
   try {
-    const tips = await Tip.find({ business_id: req.params.businessId })
+    const tips = await req.db.tip.find({ business_id: req.params.businessId })
       .select("text date compliment_count");
+
     res.json(tips);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };

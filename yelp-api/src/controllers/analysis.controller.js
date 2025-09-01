@@ -1,32 +1,35 @@
-const Business = require("../models/business.model");
-const Review = require("../models/review.model");
-const Checkin = require("../models/checkin.model");
+// src/controllers/analysis.controller.js
 
-// Análisis de ubicación: negocios por ciudad + categoría
-exports.analyzeLocation = async (req, res) => {
+/**
+ * Analiza negocios en una ciudad y categoría específica
+ */
+exports.analyzeLocation = async (req, res, next) => {
   try {
     const { city, category } = req.query;
-    let filter = {};
+    const filter = {};
     if (city) filter.city = city;
     if (category) filter.categories = new RegExp(category, "i");
 
-    const businesses = await Business.find(filter)
+    const businesses = await req.db.business
+      .find(filter)
       .select("business_id name city stars review_count categories");
 
-    res.json({
-      total: businesses.length,
-      businesses
-    });
+    res.json({ total: businesses.length, businesses });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
-// Análisis de demanda: top palabras clave en reseñas
-exports.analyzeDemand = async (req, res) => {
+/**
+ * Analiza demanda de un negocio en base a palabras clave en reseñas
+ */
+exports.analyzeDemand = async (req, res, next) => {
   try {
     const { businessId } = req.query;
-    const reviews = await Review.find({ business_id: businessId })
+    if (!businessId) return res.status(400).json({ error: "Debe proporcionar un businessId" });
+
+    const reviews = await req.db.review
+      .find({ business_id: businessId })
       .limit(50)
       .select("text");
 
@@ -38,22 +41,28 @@ exports.analyzeDemand = async (req, res) => {
       });
     });
 
-    const sorted = Object.entries(wordCount).sort((a, b) => b[1] - a[1]).slice(0, 15);
+    const sorted = Object.entries(wordCount)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 15);
+
     res.json(sorted);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
-// Brechas: comparar #negocios vs #reseñas en ciudad
-exports.analyzeGaps = async (req, res) => {
+/**
+ * Analiza brechas oferta-demanda en una ciudad
+ */
+exports.analyzeGaps = async (req, res, next) => {
   try {
     const { city } = req.query;
+    if (!city) return res.status(400).json({ error: "Debe proporcionar una ciudad" });
 
-    const businesses = await Business.find({ city }).select("business_id");
+    const businesses = await req.db.business.find({ city }).select("business_id");
     const businessIds = businesses.map(b => b.business_id);
 
-    const reviewCount = await Review.countDocuments({ business_id: { $in: businessIds } });
+    const reviewCount = await req.db.review.countDocuments({ business_id: { $in: businessIds } });
 
     res.json({
       city,
@@ -62,6 +71,6 @@ exports.analyzeGaps = async (req, res) => {
       ratio: businesses.length > 0 ? (reviewCount / businesses.length).toFixed(2) : 0
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };

@@ -1,11 +1,22 @@
+// business.routes.js
 const express = require("express");
 const router = express.Router();
 const businessCtrl = require("../controllers/business.controller");
+const datasetSelector = require("../middleware/datasetSelector");
+const Business = require("../models/business.model");
 
-// Listar negocios (filtros: city, category)
-router.get("/", businessCtrl.getBusinesses);
+// Listar negocios
+router.get(
+  "/",
+  datasetSelector({ business: Business.schema }), // ✅ CORRECTO
+  businessCtrl.getBusinesses
+);
 
-// Detalle de negocio por ID
-router.get("/:id", businessCtrl.getBusinessById);
+// Obtener un negocio específico por ID
+router.get(
+  "/:id",
+  datasetSelector({ business: Business.schema }), // ✅ CORRECTO
+  businessCtrl.getBusinessById
+);
 
 module.exports = router;

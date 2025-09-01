@@ -1,114 +1,226 @@
 openapi: 3.0.0
 info:
   title: Yelp DSS API
-  description: API para análisis de negocios usando YelpDB
+  description: >
+    API para análisis de negocios usando el **Yelp Open Dataset**.  
+    Permite explorar negocios, reseñas, tips, usuarios y realizar análisis de soporte a decisiones (DSS).  
+    También soporta **carga de datasets temporales** y exportación de reportes en CSV/PDF.
   version: 1.0.0
 
 servers:
   - url: http://localhost:4000/api
+    description: Servidor local
+
+tags:
+  - name: Business
+    description: Operaciones relacionadas con negocios
+  - name: Review
+    description: Operaciones relacionadas con reseñas
+  - name: User
+    description: Operaciones relacionadas con usuarios
+  - name: Tip
+    description: Operaciones relacionadas con tips
+  - name: Checkin
+    description: Operaciones relacionadas con checkins
+  - name: Analysis
+    description: Análisis de ubicación, demanda y brechas
+  - name: Dataset
+    description: Carga de datasets temporales
+  - name: Export
+    description: Exportación de reportes en CSV/PDF
 
 paths:
   /business:
     get:
+      tags: [Business]
       summary: Listar negocios
+      description: Lista negocios con filtros opcionales por ciudad y categoría.
       parameters:
         - name: city
           in: query
           schema: { type: string }
-          description: Filtrar por ciudad
         - name: category
           in: query
           schema: { type: string }
-          description: Filtrar por categoría
+        - name: temp
+          in: query
+          schema: { type: boolean }
+          description: Usar dataset temporal (`true`) o colección real (`false`, por defecto)
       responses:
         "200":
           description: Lista de negocios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Business"
 
   /business/{id}:
     get:
+      tags: [Business]
       summary: Detalle de un negocio
       parameters:
         - name: id
           in: path
           required: true
           schema: { type: string }
+        - name: temp
+          in: query
+          schema: { type: boolean }
+          description: Usar dataset temporal (`true`) o colección real (`false`, por defecto)
       responses:
         "200":
-          description: Información del negocio
+          description: Información detallada del negocio
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Business"
+        "404":
+          description: Negocio no encontrado
 
   /review/business/{businessId}:
     get:
+      tags: [Review]
       summary: Reseñas de un negocio
       parameters:
         - name: businessId
           in: path
           required: true
           schema: { type: string }
+        - name: temp
+          in: query
+          schema: { type: boolean }
+          description: Usar dataset temporal (`true`) o colección real (`false`, por defecto)
       responses:
         "200":
           description: Lista de reseñas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Review"
 
   /review/business/{businessId}/avg:
     get:
+      tags: [Review]
       summary: Promedio de estrellas de un negocio
       parameters:
         - name: businessId
           in: path
           required: true
           schema: { type: string }
+        - name: temp
+          in: query
+          schema: { type: boolean }
+          description: Usar dataset temporal (`true`) o colección real (`false`, por defecto)
       responses:
         "200":
           description: Promedio de estrellas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  avgStars: { type: number }
+                  total: { type: integer }
 
   /user/{id}:
     get:
+      tags: [User]
       summary: Detalle de usuario
       parameters:
         - name: id
           in: path
           required: true
           schema: { type: string }
+        - name: temp
+          in: query
+          schema: { type: boolean }
+          description: Usar dataset temporal (`true`) o colección real (`false`, por defecto)
       responses:
         "200":
           description: Datos del usuario
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: Usuario no encontrado
 
   /user:
     get:
+      tags: [User]
       summary: Top usuarios activos
       parameters:
         - name: limit
           in: query
           schema: { type: integer }
+        - name: temp
+          in: query
+          schema: { type: boolean }
+          description: Usar dataset temporal (`true`) o colección real (`false`, por defecto)
       responses:
         "200":
-          description: Lista de usuarios
+          description: Lista de usuarios con más reseñas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
 
   /tip/business/{businessId}:
     get:
+      tags: [Tip]
       summary: Tips de un negocio
       parameters:
         - name: businessId
           in: path
           required: true
           schema: { type: string }
+        - name: temp
+          in: query
+          schema: { type: boolean }
+          description: Usar dataset temporal (`true`) o colección real (`false`, por defecto)
       responses:
         "200":
           description: Lista de tips
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Tip"
 
   /checkin/business/{businessId}:
     get:
+      tags: [Checkin]
       summary: Número de checkins de un negocio
       parameters:
         - name: businessId
           in: path
           required: true
           schema: { type: string }
+        - name: temp
+          in: query
+          schema: { type: boolean }
+          description: Usar dataset temporal (`true`) o colección real (`false`, por defecto)
       responses:
         "200":
           description: Número de checkins
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  business_id: { type: string }
+                  count: { type: integer }
 
   /analysis/location:
     get:
+      tags: [Analysis]
       summary: Análisis de ubicación
       parameters:
         - name: city
@@ -117,30 +229,150 @@ paths:
         - name: category
           in: query
           schema: { type: string }
+        - name: temp
+          in: query
+          schema: { type: boolean }
+          description: Usar dataset temporal (`true`) o colección real (`false`, por defecto)
       responses:
         "200":
           description: Negocios encontrados en ciudad y categoría
 
   /analysis/demand:
     get:
+      tags: [Analysis]
       summary: Análisis de demanda
       parameters:
         - name: businessId
           in: query
           required: true
           schema: { type: string }
+        - name: temp
+          in: query
+          schema: { type: boolean }
+          description: Usar dataset temporal (`true`) o colección real (`false`, por defecto)
       responses:
         "200":
           description: Palabras clave frecuentes
 
   /analysis/gaps:
     get:
+      tags: [Analysis]
       summary: Análisis de brechas oferta-demanda
       parameters:
         - name: city
           in: query
           required: true
           schema: { type: string }
+        - name: temp
+          in: query
+          schema: { type: boolean }
+          description: Usar dataset temporal (`true`) o colección real (`false`, por defecto)
       responses:
         "200":
           description: Ratio reseñas vs negocios
+
+  /upload/{collection}:
+    post:
+      tags: [Dataset]
+      summary: Cargar dataset temporal
+      description: Sube un archivo JSON o JSON Lines para la colección indicada.
+      parameters:
+        - name: collection
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [business, review, user, tip, checkin]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Dataset cargado en colección temporal
+        "400":
+          description: Error de validación
+
+  /export/csv:
+    get:
+      tags: [Export]
+      summary: Exportar reporte en CSV
+      parameters:
+        - name: report
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [top-business, top-cities, top-users, categories]
+      responses:
+        "200":
+          description: Archivo CSV generado
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+
+  /export/pdf:
+    get:
+      tags: [Export]
+      summary: Exportar reporte en PDF
+      parameters:
+        - name: report
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [top-business, top-cities, top-users, categories]
+      responses:
+        "200":
+          description: Archivo PDF generado
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+
+components:
+  schemas:
+    Business:
+      type: object
+      properties:
+        business_id: { type: string }
+        name: { type: string }
+        city: { type: string }
+        state: { type: string }
+        stars: { type: number }
+        review_count: { type: integer }
+        categories: { type: string }
+
+    User:
+      type: object
+      properties:
+        user_id: { type: string }
+        name: { type: string }
+        review_count: { type: integer }
+        useful: { type: integer }
+        funny: { type: integer }
+        cool: { type: integer }
+
+    Review:
+      type: object
+      properties:
+        review_id: { type: string }
+        stars: { type: number }
+        text: { type: string }
+        date: { type: string }
+
+    Tip:
+      type: object
+      properties:
+        text: { type: string }
+        date: { type: string }
+        compliment_count: { type: integer }
