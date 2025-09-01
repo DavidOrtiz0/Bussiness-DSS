@@ -8,11 +8,21 @@
 const express = require("express");
 const router = express.Router();
 const userCtrl = require("../controllers/user.controller");
+const datasetSelector = require("../middleware/datasetSelector");
+
+// Importamos el modelo para pasar su schema
+const User = require("../models/user.model");
 
 // Obtener usuario por ID
-router.get("/:id", userCtrl.getUserById);
+router.get("/:id",
+  datasetSelector({ user: User.schema }),
+  userCtrl.getUserById
+);
 
 // Top usuarios con más reseñas
-router.get("/", userCtrl.getTopUsers);
+router.get("/",
+  datasetSelector({ user: User.schema }),
+  userCtrl.getTopUsers
+);
 
 module.exports = router;

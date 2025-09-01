@@ -1,34 +1,50 @@
+/**
+ * Controlador de Exportación de Reportes
+ * - Exporta en CSV o PDF
+ * - Reportes soportados:
+ *   - top-business
+ *   - top-cities
+ *   - top-users
+ *   - categories
+ *
+ * 🚀 Refactor:
+ * Se reemplaza el uso directo de modelos por `req.db`
+ * para permitir consultas en colecciones reales o temporales.
+ */
+
 const PDFDocument = require("pdfkit");
 const { Parser } = require("json2csv");
-const Business = require("../models/business.model");
-const User = require("../models/user.model");
-const Review = require("../models/review.model");
 
-async function getReportData(type) {
+/**
+ * Obtiene los datos de un reporte
+ * @param {string} type - Tipo de reporte
+ * @param {object} db   - Modelos dinámicos desde req.db
+ */
+async function getReportData(type, db) {
   switch (type) {
     case "top-business":
-      return await Business.find()
+      return await db.business.find()
         .sort({ stars: -1, review_count: -1 })
         .limit(10)
         .select("name city stars review_count")
         .lean();
 
     case "top-cities":
-      return await Business.aggregate([
+      return await db.business.aggregate([
         { $group: { _id: "$city", total: { $sum: 1 } } },
         { $sort: { total: -1 } },
         { $limit: 10 }
       ]);
 
     case "top-users":
-      return await User.find()
+      return await db.user.find()
         .sort({ review_count: -1 })
         .limit(10)
         .select("name review_count useful cool funny")
         .lean();
 
     case "categories":
-      return await Business.aggregate([
+      return await db.business.aggregate([
         {
           $project: {
             categories: { $split: ["$categories", ", "] }
@@ -45,13 +61,19 @@ async function getReportData(type) {
   }
 }
 
-// CSV export
-exports.exportCSV = async (req, res) => {
+/**
+ * Exportar CSV
+ * @route GET /api/export/csv?report=top-business&temp=true
+ */
+exports.exportCSV = async (req, res, next) => {
   try {
     const { report } = req.query;
-    if (!report) return res.status(400).json({ error: "Falta parámetro ?report=" });
+    if (!report) {
+      return res.status(400).json({ error: "Falta parámetro ?report=" });
+    }
 
-    const data = await getReportData(report);
+    const data = await getReportData(report, req.db);
+
     const parser = new Parser();
     const csv = parser.parse(data);
 
@@ -60,17 +82,23 @@ exports.exportCSV = async (req, res) => {
     res.send(csv);
   } catch (err) {
     console.error("CSV export error:", err);
-    res.status(500).json({ error: "Error exportando CSV" });
+    next(err);
   }
 };
 
-// PDF export
-exports.exportPDF = async (req, res) => {
+/**
+ * Exportar PDF
+ * @route GET /api/export/pdf?report=top-business&temp=true
+ */
+exports.exportPDF = async (req, res, next) => {
   try {
     const { report } = req.query;
-    if (!report) return res.status(400).json({ error: "Falta parámetro ?report=" });
+    if (!report) {
+      return res.status(400).json({ error: "Falta parámetro ?report=" });
+    }
 
-    const data = await getReportData(report);
+    const data = await getReportData(report, req.db);
+
     const doc = new PDFDocument();
 
     res.setHeader("Content-Type", "application/pdf");
@@ -87,6 +115,6 @@ exports.exportPDF = async (req, res) => {
     doc.end();
   } catch (err) {
     console.error("PDF export error:", err);
-    res.status(500).json({ error: "Error exportando PDF" });
+    next(err);
   }
 };

@@ -1,18 +1,22 @@
-/**
- * Rutas para la colección "Business"
- * 
- * - GET /api/business?city=...&category=... → listar negocios con filtros
- * - GET /api/business/:id                   → obtener un negocio por ID
- */
-
+// business.routes.js
 const express = require("express");
 const router = express.Router();
 const businessCtrl = require("../controllers/business.controller");
+const datasetSelector = require("../middleware/datasetSelector");
+const Business = require("../models/business.model");
 
-// Listar negocios (filtros opcionales por ciudad y categoría)
-router.get("/", businessCtrl.getBusinesses);
+// Listar negocios
+router.get(
+  "/",
+  datasetSelector({ business: Business.schema }), // ✅ CORRECTO
+  businessCtrl.getBusinesses
+);
 
 // Obtener un negocio específico por ID
-router.get("/:id", businessCtrl.getBusinessById);
+router.get(
+  "/:id",
+  datasetSelector({ business: Business.schema }), // ✅ CORRECTO
+  businessCtrl.getBusinessById
+);
 
 module.exports = router;

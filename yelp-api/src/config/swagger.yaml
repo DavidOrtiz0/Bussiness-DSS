@@ -4,8 +4,9 @@ info:
   description: >
     API para análisis de negocios usando el **Yelp Open Dataset**.  
     Permite explorar negocios, reseñas, tips, usuarios y realizar análisis de soporte a decisiones (DSS).  
-    También soporta carga de datasets temporales y exportación de reportes en CSV/PDF.
+    También soporta **carga de datasets temporales** y exportación de reportes en CSV/PDF.
   version: 1.0.0
+
 servers:
   - url: http://localhost:4000/api
     description: Servidor local
@@ -38,11 +39,13 @@ paths:
         - name: city
           in: query
           schema: { type: string }
-          description: Filtrar por ciudad
         - name: category
           in: query
           schema: { type: string }
-          description: Filtrar por categoría
+        - name: temp
+          in: query
+          schema: { type: boolean }
+          description: Usar dataset temporal (`true`) o colección real (`false`, por defecto)
       responses:
         "200":
           description: Lista de negocios
@@ -62,6 +65,10 @@ paths:
           in: path
           required: true
           schema: { type: string }
+        - name: temp
+          in: query
+          schema: { type: boolean }
+          description: Usar dataset temporal (`true`) o colección real (`false`, por defecto)
       responses:
         "200":
           description: Información detallada del negocio
@@ -81,6 +88,10 @@ paths:
           in: path
           required: true
           schema: { type: string }
+        - name: temp
+          in: query
+          schema: { type: boolean }
+          description: Usar dataset temporal (`true`) o colección real (`false`, por defecto)
       responses:
         "200":
           description: Lista de reseñas
@@ -100,6 +111,10 @@ paths:
           in: path
           required: true
           schema: { type: string }
+        - name: temp
+          in: query
+          schema: { type: boolean }
+          description: Usar dataset temporal (`true`) o colección real (`false`, por defecto)
       responses:
         "200":
           description: Promedio de estrellas
@@ -120,6 +135,10 @@ paths:
           in: path
           required: true
           schema: { type: string }
+        - name: temp
+          in: query
+          schema: { type: boolean }
+          description: Usar dataset temporal (`true`) o colección real (`false`, por defecto)
       responses:
         "200":
           description: Datos del usuario
@@ -138,6 +157,10 @@ paths:
         - name: limit
           in: query
           schema: { type: integer }
+        - name: temp
+          in: query
+          schema: { type: boolean }
+          description: Usar dataset temporal (`true`) o colección real (`false`, por defecto)
       responses:
         "200":
           description: Lista de usuarios con más reseñas
@@ -157,6 +180,10 @@ paths:
           in: path
           required: true
           schema: { type: string }
+        - name: temp
+          in: query
+          schema: { type: boolean }
+          description: Usar dataset temporal (`true`) o colección real (`false`, por defecto)
       responses:
         "200":
           description: Lista de tips
@@ -176,6 +203,10 @@ paths:
           in: path
           required: true
           schema: { type: string }
+        - name: temp
+          in: query
+          schema: { type: boolean }
+          description: Usar dataset temporal (`true`) o colección real (`false`, por defecto)
       responses:
         "200":
           description: Número de checkins
@@ -198,6 +229,10 @@ paths:
         - name: category
           in: query
           schema: { type: string }
+        - name: temp
+          in: query
+          schema: { type: boolean }
+          description: Usar dataset temporal (`true`) o colección real (`false`, por defecto)
       responses:
         "200":
           description: Negocios encontrados en ciudad y categoría
@@ -211,6 +246,10 @@ paths:
           in: query
           required: true
           schema: { type: string }
+        - name: temp
+          in: query
+          schema: { type: boolean }
+          description: Usar dataset temporal (`true`) o colección real (`false`, por defecto)
       responses:
         "200":
           description: Palabras clave frecuentes
@@ -224,6 +263,10 @@ paths:
           in: query
           required: true
           schema: { type: string }
+        - name: temp
+          in: query
+          schema: { type: boolean }
+          description: Usar dataset temporal (`true`) o colección real (`false`, por defecto)
       responses:
         "200":
           description: Ratio reseñas vs negocios

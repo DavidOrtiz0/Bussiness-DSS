@@ -1,12 +1,4 @@
-/**
- * Controlador de Análisis DSS
- * - Análisis de ubicación
- * - Análisis de demanda
- * - Análisis de brechas oferta-demanda
- */
-
-const Business = require("../models/business.model");
-const Review = require("../models/review.model");
+// src/controllers/analysis.controller.js
 
 /**
  * Analiza negocios en una ciudad y categoría específica
@@ -15,11 +7,11 @@ exports.analyzeLocation = async (req, res, next) => {
   try {
     const { city, category } = req.query;
     const filter = {};
-
     if (city) filter.city = city;
     if (category) filter.categories = new RegExp(category, "i");
 
-    const businesses = await Business.find(filter)
+    const businesses = await req.db.business
+      .find(filter)
       .select("business_id name city stars review_count categories");
 
     res.json({ total: businesses.length, businesses });
@@ -34,11 +26,10 @@ exports.analyzeLocation = async (req, res, next) => {
 exports.analyzeDemand = async (req, res, next) => {
   try {
     const { businessId } = req.query;
-    if (!businessId) {
-      return res.status(400).json({ error: "Debe proporcionar un businessId" });
-    }
+    if (!businessId) return res.status(400).json({ error: "Debe proporcionar un businessId" });
 
-    const reviews = await Review.find({ business_id: businessId })
+    const reviews = await req.db.review
+      .find({ business_id: businessId })
       .limit(50)
       .select("text");
 
@@ -66,14 +57,12 @@ exports.analyzeDemand = async (req, res, next) => {
 exports.analyzeGaps = async (req, res, next) => {
   try {
     const { city } = req.query;
-    if (!city) {
-      return res.status(400).json({ error: "Debe proporcionar una ciudad" });
-    }
+    if (!city) return res.status(400).json({ error: "Debe proporcionar una ciudad" });
 
-    const businesses = await Business.find({ city }).select("business_id");
+    const businesses = await req.db.business.find({ city }).select("business_id");
     const businessIds = businesses.map(b => b.business_id);
 
-    const reviewCount = await Review.countDocuments({ business_id: { $in: businessIds } });
+    const reviewCount = await req.db.review.countDocuments({ business_id: { $in: businessIds } });
 
     res.json({
       city,
