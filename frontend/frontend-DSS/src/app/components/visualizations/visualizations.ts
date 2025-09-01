@@ -1,41 +1,34 @@
 import { Component, OnInit } from '@angular/core';
-
-import {Chart, registerables} from 'chart.js'; 
+import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
 
 @Component({
   selector: 'app-visualizations',
-  imports: [],
-  standalone: true, 
+  standalone: true,
   templateUrl: './visualizations.html',
   styleUrl: './visualizations.css'
 })
 export class Visualizations implements OnInit{
+  chart: any;
 
-  public config: any = {
-  type: 'bar',
-  data: 
-  {
-    labels: ['Enero', 'Febrero', 'Marzo'],
-    datasets:
-    [
-      {label: 'sales', data:['456', '245', '642'], backgroundcolor: 'blue'},
-      {label: 'sales', data:['456', '245', '642'], backgroundcolor: 'red'},
-      {label: 'sales', data:['456', '245', '642'], backgroundcolor: 'yellow'}
-    ]
-  },
-  options: {
-    scales: {
-      y: {
-        beginAtZero: true
-      }
+  private config: any = {
+    type: 'bar',
+    data: {
+      labels: ['Cafetería','Pizzería','Vegano','Bar'],
+      datasets: [
+        { label:'Ofertas', data:[50,12,18,20], backgroundColor: 'rgba(54,162,235,.6)' },
+        { label:'Demanda', data:[90,25,30,28], backgroundColor: 'rgba(255,99,132,.6)' }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: { y: { beginAtZero: true } },
+      plugins: { legend: { position: 'bottom' } }
     }
-  },
-};
-chart: any;
+  };
 
   ngOnInit(): void {
-      this.chart = new Chart('Mychart', this.config);
+    this.chart = new Chart('Mychart', this.config);
   }
-
 }

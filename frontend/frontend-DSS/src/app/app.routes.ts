@@ -8,10 +8,14 @@ export const routes: Routes =
 [
     {
         path: '',
-        component: Dashboard
+        component: FileUpload
     },
     {
         path: 'FileUpload',
         component: FileUpload
+    }, 
+    {
+        path:'Dashboard',
+        component: Dashboard
     }
 ];

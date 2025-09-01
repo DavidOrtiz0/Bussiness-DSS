@@ -1,21 +1,36 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { catchError, map, Observable, of } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+type Collection = 'business'|'review'|'user'|'tip'|'checkin';
+
+  export type UploadResult =
+  | { ok: true;  data: any }
+  | { ok: false; error: string };
+
+@Injectable({ providedIn: 'root' })
 export class ApiService {
-  private apiUrl = 'http://localhost:4000/api'; // Ajusta según tu API
 
-  constructor(private http: HttpClient){}
 
-  upload_file(file : File): Observable<any>{
-  const formData = new FormData();
-  formData.append('file', file)
 
-  return this.http.post(`${this.apiUrl}/upload`, formData)
-  }
+  // ajusta si usas proxy: /api → http://localhost:4000/api
+  readonly base = '/api';
+  // 'upload' = usando datasets temporales; 'api' = conectado a BD/API
+  mode = signal<'upload'|'api'>('api');
+
+  constructor(private http: HttpClient) {}
+
+  connectToApi(){ this.mode.set('api'); return of(true); }
+
+upload(collection: Collection, file: File): Observable<UploadResult> {
+  const form = new FormData(); form.append('file', file);
+  return this.http.post(`${this.base}/upload/${collection}`, form).pipe(
+    map((r:any) => ({ ok: true, data: r } as const)),
+    catchError((e:HttpErrorResponse) =>
+      of({ ok: false, error: (e.error?.message ?? e.message ?? 'Error') } as const)
+    )
+  );
+}
 
   
 }

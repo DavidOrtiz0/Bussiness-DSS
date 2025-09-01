@@ -1,6 +1,63 @@
-<div class="dashboard-container">
-  <!-- DASHBOARD CONTENT -->
-  <div class="row mt-4">
-    <h1>Estas en File Upload</h1>
+<div class="container py-4">
+  <h4 class="fw-bold mb-3">Fuente de datos</h4>
+
+  <!-- Pantalla inicial -->
+  <div *ngIf="view() === 'menu'" class="row g-3">
+    <div class="col-12 col-md-6">
+      <div class="neu-card p-4 h-100 text-center">
+        <h5 class="mb-2">Cargar archivos JSON</h5>
+        <p class="text-muted small">Sube los archivos con la estructura del Yelp Dataset. Validación en servidor.</p>
+        <button class="btn btn-primary" (click)="pickUpload()">Elegir archivos</button>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-6">
+      <div class="neu-card p-4 h-100 text-center">
+        <h5 class="mb-2">Conectar con API</h5>
+        <p class="text-muted small">Usar los datos existentes de la BD/API.</p>
+        <a routerLink="/Dashboard"><button class="btn btn-success" (click)="pickConnect()">Conectar y ver dashboard</button></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wizard de carga -->
+  <div *ngIf="view() === 'wizard'" class="neu-card p-3">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h5 class="mb-0">Cargar datasets temporales</h5>
+      <span class="badge bg-secondary" *ngIf="!allDone()">Pendientes</span>
+      <span class="badge bg-success" *ngIf="allDone()">Listo</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Archivo</th><th>Seleccionar</th><th>Acción</th><th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of steps()">
+            <td class="fw-semibold">{{ s.label }}</td>
+            <td>
+              <input type="file" accept=".json,.jsonl" class="form-control" (change)="onFileChange(s, $event)">
+            </td>
+            <td>
+              <button class="btn btn-outline-primary" (click)="send(s)">Subir</button>
+            </td>
+            <td>
+              <span class="badge bg-warning text-dark" *ngIf="s.status==='pendiente'">Pendiente</span>
+              <span class="badge bg-success" *ngIf="s.status==='ok'">OK</span>
+              <span class="badge bg-danger" *ngIf="s.status==='error'">Error</span>
+              <div class="small text-muted mt-1" *ngIf="s.msg">{{ s.msg }}</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="d-flex gap-2 justify-content-end">
+      <button class="btn btn-light" routerLink="/">Cancelar</button>
+      <button class="btn btn-primary" [disabled]="!allDone()" (click)="goDashboard()">Ir al dashboard</button>
+    </div>
   </div>
 </div>

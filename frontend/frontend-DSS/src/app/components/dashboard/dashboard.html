@@ -1,16 +1,67 @@
-<div class="dashboard-container">
-  <!-- DASHBOARD CONTENT -->
-  <div class="row mt-4">
-    <h1>Estas en Dashboard</h1>
-    <!-- KPI Cards -->
-    <div class="col-12 col-md-3 mb-3" *ngFor="let kpi of kpis">
-      <div class="card kpi-card">
-        <div class="card-body text-center">
-          <h5 class="card-title">{{kpi.title}}</h5>
-          <p class="card-text display-6">{{kpi.value}}</p>
-        </div>
+<app-sidebar></app-sidebar>
+
+<div class="container py-4">
+  <h3 class="text-center fw-bold mb-4">Plataforma de Inteligencia de Negocio Local</h3>
+
+  <!-- KPIs -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-md-4" *ngFor="let k of kpis">
+      <div class="neu-card p-3 text-center">
+        <div class="small text-primary-emphasis">{{ k.title }}</div>
+        <div class="display-6 fw-semibold mt-1">{{ k.value }}</div>
       </div>
     </div>
   </div>
-  <app-visualizations></app-visualizations>
+
+  <!-- Filtros -->
+  <div class="neu-card p-3 mb-3">
+    <div class="row g-2 align-items-end">
+      <div class="col-12 col-md-4">
+        <label class="form-label small">Ciudad</label>
+        <input class="form-control" [(ngModel)]="city" placeholder="Toronto">
+      </div>
+      <div class="col-12 col-md-4">
+        <label class="form-label small">Categoría</label>
+        <input class="form-control" [(ngModel)]="category" placeholder="Restaurants">
+      </div>
+      <div class="col-6 col-md-2">
+        <button class="btn btn-primary w-100" (click)="refrescar()">Aplicar</button>
+      </div>
+      <div class="col-6 col-md-2">
+        <select class="form-select" [(ngModel)]="topN">
+          <option [ngValue]="5">Top 5</option>
+          <option [ngValue]="10">Top 10</option>
+          <option [ngValue]="20">Top 20</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <ul class="nav nav-pills justify-content-center mb-3">
+    <li class="nav-item" *ngFor="let t of tabs">
+      <button class="nav-link" [class.active]="active===t.key" (click)="setTab(t.key)">{{t.label}}</button>
+    </li>
+  </ul>
+
+  <!-- Contenido: un solo gráfico -->
+  <div class="neu-card p-3">
+    <ng-container [ngSwitch]="active">
+      <!-- Ubicación -->
+      <div *ngSwitchCase="'ubicacion'">
+        <app-chart [type]="'bar-horizontal'" [labels]="chart.labels" [datasets]="chart.datasets"></app-chart>
+      </div>
+
+      <!-- Brechas -->
+      <div *ngSwitchCase="'brechas'">
+        <app-chart [type]="'bar'" [labels]="chart.labels" [datasets]="chart.datasets"></app-chart>
+      </div>
+
+      <!-- Tendencias -->
+      <div *ngSwitchCase="'tendencias'">
+        <app-chart [type]="'line'" [labels]="chart.labels" [datasets]="chart.datasets"
+                   [options]="{plugins:{legend:{position:'bottom'}}}"></app-chart>
+      </div>
+    </ng-container>
+  </div>
 </div>
