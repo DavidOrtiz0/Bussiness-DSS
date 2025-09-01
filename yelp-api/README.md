@@ -23,7 +23,7 @@ Soporta carga de datasets temporales y exportación de reportes en **CSV/PDF**.
 ```bash
 # Clonar repositorio
 git clone https://github.com/DavidOrtiz0/Bussiness-DSS.git
-cd yelp-dss-api
+cd yelp-api
 
 # Instalar dependencias
 npm install
