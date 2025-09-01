@@ -18,11 +18,11 @@
     <div class="row g-2 align-items-end">
       <div class="col-12 col-md-4">
         <label class="form-label small">Ciudad</label>
-        <input class="form-control" [(ngModel)]="city" placeholder="Toronto">
+        <input class="form-control" [(ngModel)]="city" placeholder="Toronto" />
       </div>
       <div class="col-12 col-md-4">
         <label class="form-label small">Categoría</label>
-        <input class="form-control" [(ngModel)]="category" placeholder="Restaurants">
+        <input class="form-control" [(ngModel)]="category" placeholder="Restaurants" />
       </div>
       <div class="col-6 col-md-2">
         <button class="btn btn-primary w-100" (click)="refrescar()">Aplicar</button>
@@ -40,27 +40,41 @@
   <!-- Tabs -->
   <ul class="nav nav-pills justify-content-center mb-3">
     <li class="nav-item" *ngFor="let t of tabs">
-      <button class="nav-link" [class.active]="active===t.key" (click)="setTab(t.key)">{{t.label}}</button>
+      <button class="nav-link" [class.active]="active===t.key" (click)="setTab(t.key)">
+        {{ t.label }}
+      </button>
     </li>
   </ul>
 
-  <!-- Contenido: un solo gráfico -->
+  <!-- Contenido -->
   <div class="neu-card p-3">
     <ng-container [ngSwitch]="active">
       <!-- Ubicación -->
       <div *ngSwitchCase="'ubicacion'">
-        <app-chart [type]="'bar-horizontal'" [labels]="chart.labels" [datasets]="chart.datasets"></app-chart>
+        <app-chart
+          [type]="'bar-horizontal'"
+          [labels]="chart.labels"
+          [datasets]="chart.datasets">
+        </app-chart>
       </div>
 
       <!-- Brechas -->
       <div *ngSwitchCase="'brechas'">
-        <app-chart [type]="'bar'" [labels]="chart.labels" [datasets]="chart.datasets"></app-chart>
+        <app-chart
+          [type]="'bar'"
+          [labels]="chart.labels"
+          [datasets]="chart.datasets">
+        </app-chart>
       </div>
 
       <!-- Tendencias -->
       <div *ngSwitchCase="'tendencias'">
-        <app-chart [type]="'line'" [labels]="chart.labels" [datasets]="chart.datasets"
-                   [options]="{plugins:{legend:{position:'bottom'}}}"></app-chart>
+        <app-chart
+          [type]="'line'"
+          [labels]="chart.labels"
+          [datasets]="chart.datasets"
+          [options]="{ plugins: { legend: { position: 'bottom' } } }">
+        </app-chart>
       </div>
     </ng-container>
   </div>
