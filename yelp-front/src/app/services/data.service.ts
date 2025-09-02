@@ -88,22 +88,47 @@ export class DataService {
 
   // ---------- Brechas (con filtro ciudad) ----------
   getBrechas(city: string) {
-    return this.api.getBrechas(city).pipe(
-      map(unwrap),
-      map((d: any): GapsRes => {
-        // Si el back devuelve forma agregada distinta, normalizamos vacío
-        if (!d?.labels && !d?.categories) {
-          return { labels: [], oferta: [], demanda: [] };
-        }
-        return {
-          labels : arr<string>(d?.labels ?? d?.categories),
-          oferta : arr<number>(d?.oferta ?? d?.supply ?? []),
-          demanda: arr<number>(d?.demanda ?? d?.demand ?? []),
-        };
-      }),
-      catchError(() => of<GapsRes>({ labels: [], oferta: [], demanda: [] }))
-    );
-  }
+  return this.api.getBrechas(city).pipe(
+    map(unwrap),
+    switchMap((d: any) => {
+      // Si el endpoint no trae arrays (labels/oferta/demanda), agregamos desde /business?city=...
+      const noArrays = !Array.isArray(d?.labels) && !Array.isArray(d?.categories);
+      if (noArrays && city) {
+        return this.api.listBusiness({ city, limit: 500 }).pipe(
+          map(unwrap),
+          map((list: any[]): GapsRes => {
+            const offerMap = new Map<string, number>();
+            const demandMap = new Map<string, number>();
+            for (const b of arr<any>(list)) {
+              const cats = String(b.categories ?? '')
+                .split(',').map((s: string) => s.trim()).filter(Boolean);
+              const demandScore = (Number(b.stars ?? 0) * Math.log1p(Number(b.review_count ?? 0))) || 0;
+              for (const c of cats) {
+                offerMap.set(c, (offerMap.get(c) ?? 0) + 1);
+                demandMap.set(c, (demandMap.get(c) ?? 0) + demandScore);
+              }
+            }
+            const labels = Array.from(offerMap.keys())
+              .sort((a, b) => (demandMap.get(b) ?? 0) - (demandMap.get(a) ?? 0));
+            const top = labels.slice(0, 10);
+            return {
+              labels: top,
+              oferta: top.map(c => offerMap.get(c) ?? 0),
+              demanda: top.map(c => +(demandMap.get(c) ?? 0).toFixed(2)),
+            };
+          })
+        );
+      }
+      // Forma “rica” (ya con arrays)
+      return of<GapsRes>({
+        labels : arr<string>(d?.labels ?? d?.categories),
+        oferta : arr<number>(d?.oferta ?? d?.supply ?? []),
+        demanda: arr<number>(d?.demanda ?? d?.demand ?? []),
+      });
+    }),
+    catchError(() => of<GapsRes>({ labels: [], oferta: [], demanda: [] }))
+  );
+}
 
   // ---------- Brechas (general sin filtros) ----------
   getBrechasGeneral(topN = 10){
@@ -137,37 +162,46 @@ export class DataService {
   }
 
   // ---------- Tendencias (con filtros) ----------
-  getTendencias(city: string, category: string) {
-    return this.api.listBusiness({ city, category, limit: 1 }).pipe(
-      map(unwrap),
-      switchMap((r: any) => {
-        const biz = r?.[0] ?? r?.data?.[0];
-        if (!biz?._id) return of<TrendsRes>({ labels: [], reseñas: [], rating: [] });
+getTendencias(city: string, category: string) {
+  // 1) intenta city+category; 2) intenta solo city; 3) cae a global top
+  const tryWith = (q: any) =>
+    this.api.listBusiness({ ...q, limit: 50 }).pipe(map(unwrap));
 
-        return this.api.reviewsOfBusiness(biz._id, 500).pipe(
-          map(unwrap),
-          map((list: any[]) => {
-            const byMonth = new Map<string, { c: number; sum: number }>();
-            for (const x of arr<any>(list)) {
-              const d = new Date(x.date ?? x.created_at ?? x.time ?? Date.now());
-              const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-              const cur = byMonth.get(key) ?? { c: 0, sum: 0 };
-              cur.c += 1; cur.sum += Number(x.stars ?? x.rating ?? 0);
-              byMonth.set(key, cur);
-            }
-            const labels = Array.from(byMonth.keys()).sort();
-            const reseñas = labels.map(k => byMonth.get(k)!.c);
-            const rating  = labels.map(k => {
-              const v = byMonth.get(k)!; return v.c ? +(v.sum / v.c).toFixed(2) : 0;
-            });
-            return { labels, reseñas, rating } as TrendsRes;
-          }),
-          catchError(() => of<TrendsRes>({ labels: [], reseñas: [], rating: [] }))
-        );
-      }),
-      catchError(() => of<TrendsRes>({ labels: [], reseñas: [], rating: [] }))
-    );
-  }
+  return tryWith({ city, category }).pipe(
+    switchMap((list: any[]) => {
+      let pick = arr<any>(list)
+        .sort((a, b) => (b.review_count ?? 0) - (a.review_count ?? 0))[0];
+      if (!pick?._id && city) return tryWith({ city });
+      if (!pick?._id) return tryWith({});
+      return of([pick]);
+    }),
+    switchMap((list: any[]) => {
+      const biz = arr<any>(list)[0];
+      if (!biz?._id) return of<TrendsRes>({ labels: [], reseñas: [], rating: [] });
+      return this.api.reviewsOfBusiness(biz.business_id ?? biz._id, 500).pipe(
+        map(unwrap),
+        map((reviews: any[]) => {
+          const byMonth = new Map<string, { c: number; sum: number }>();
+          for (const x of arr<any>(reviews)) {
+            const d = new Date(x.date ?? x.created_at ?? x.time ?? Date.now());
+            const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+            const cur = byMonth.get(key) ?? { c: 0, sum: 0 };
+            cur.c += 1; cur.sum += Number(x.stars ?? x.rating ?? 0);
+            byMonth.set(key, cur);
+          }
+          const labels = Array.from(byMonth.keys()).sort();
+          const reseñas = labels.map(k => byMonth.get(k)!.c);
+          const rating  = labels.map(k => {
+            const v = byMonth.get(k)!; return v.c ? +(v.sum / v.c).toFixed(2) : 0;
+          });
+          return { labels, reseñas, rating } as TrendsRes;
+        }),
+        catchError(() => of<TrendsRes>({ labels: [], reseñas: [], rating: [] }))
+      );
+    }),
+    catchError(() => of<TrendsRes>({ labels: [], reseñas: [], rating: [] }))
+  );
+}
 
   // ---------- Tendencias (general sin filtros) ----------
   getTendenciasGeneral(){
@@ -177,7 +211,7 @@ export class DataService {
       switchMap((list:any[])=>{
         const top = arr<any>(list).sort((a,b)=>(b.review_count??0)-(a.review_count??0))[0];
         if (!top?._id) return of<TrendsRes>({ labels: [], reseñas: [], rating: [] });
-        return this.api.reviewsOfBusiness(top._id, 500).pipe(
+        return this.api.reviewsOfBusiness(top.business_id ?? top._id, 500).pipe(
           map(unwrap),
           map((reviews:any[])=>{
             const byMonth = new Map<string, { c: number; sum: number }>();
