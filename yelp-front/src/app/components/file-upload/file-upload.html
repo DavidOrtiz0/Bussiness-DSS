@@ -6,7 +6,11 @@
     <div class="col-12 col-md-6">
       <div class="neu-card p-4 h-100 text-center">
         <h5 class="mb-2">Cargar archivos JSON</h5>
-        <p class="text-muted small">Sube los archivos con la estructura del Yelp Dataset. Validación en servidor.</p>
+
+        <p class="text-muted small">
+          Sube los archivos con la estructura del Yelp Dataset. Validación en servidor.
+        </p>
+
         <button class="btn btn-primary" (click)="pickUpload()">Elegir archivos</button>
       </div>
     </div>
@@ -15,7 +19,11 @@
       <div class="neu-card p-4 h-100 text-center">
         <h5 class="mb-2">Conectar con API</h5>
         <p class="text-muted small">Usar los datos existentes de la BD/API.</p>
-        <a routerLink="/Dashboard"><button class="btn btn-success" (click)="pickConnect()">Conectar y ver dashboard</button></a>
+
+        <button class="btn btn-success" (click)="pickConnect()" [disabled]="connecting">
+          {{ connecting ? 'Conectando…' : 'Conectar y ver dashboard' }}
+        </button>
+
       </div>
     </div>
   </div>
@@ -42,7 +50,10 @@
               <input type="file" accept=".json,.jsonl" class="form-control" (change)="onFileChange(s, $event)">
             </td>
             <td>
-              <button class="btn btn-outline-primary" (click)="send(s)">Subir</button>
+              <button class="btn btn-outline-primary" (click)="send(s)" [disabled]="uploading">
+                {{ uploading ? 'Subiendo…' : 'Subir' }}
+              </button>
+
             </td>
             <td>
               <span class="badge bg-warning text-dark" *ngIf="s.status==='pendiente'">Pendiente</span>

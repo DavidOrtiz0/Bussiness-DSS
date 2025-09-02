@@ -1,61 +1,88 @@
 import { Component, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ApiService, UploadResult } from '../../services/api.service';
-import { Router, RouterLink } from '@angular/router';
 
-type Coll = 'business'|'review'|'user'|'tip'|'checkin';
-type Step = { key: Coll; label: string; status: 'pendiente'|'ok'|'error'; msg?: string; file?: File };
+import { Router, RouterLink } from '@angular/router';
+import { ApiService, UploadResult, Collection } from '../../services/api.service';
+
+type Status = 'pendiente' | 'ok' | 'error';
+type Step = { key: Collection; label: string; status: Status; msg?: string; file?: File };
+
 
 @Component({
   selector: 'app-file-upload',
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './file-upload.html',
-  styleUrls: ['./file-upload.css']
+  styleUrls: ['./file-upload.css'],
+
 })
 export class FileUpload {
   constructor(private api: ApiService, private router: Router) {}
 
-  view = signal<'menu'|'wizard'>('menu');
+
+  view = signal<'menu' | 'wizard'>('menu');
+  connecting = false;
+  uploading = false;
 
   steps = signal<Step[]>([
-    { key:'business', label:'business.json', status:'pendiente' },
-    { key:'review',   label:'review.json',   status:'pendiente' },
-    { key:'user',     label:'user.json',     status:'pendiente' },
-    { key:'tip',      label:'tip.json',      status:'pendiente' },
-    { key:'checkin',  label:'checkin.json',  status:'pendiente' },
+    { key: 'business', label: 'business.json', status: 'pendiente' },
+    { key: 'review',   label: 'review.json',   status: 'pendiente' },
+    { key: 'user',     label: 'user.json',     status: 'pendiente' },
+    { key: 'tip',      label: 'tip.json',      status: 'pendiente' },
+    { key: 'checkin',  label: 'checkin.json',  status: 'pendiente' },
   ]);
 
-  allDone = computed(()=> this.steps().every(s=> s.status==='ok'));
+  allDone = computed(() => this.steps().every(s => s.status === 'ok'));
 
-  pickUpload(){ this.view.set('wizard'); this.api.mode.set('upload'); }
-  
-  pickConnect(){
-    
-    this.api.connectToApi().subscribe(()=> this.router.navigateByUrl('/'));
+  pickUpload() {
+    this.view.set('wizard');
+    this.api.mode.set('upload');
   }
 
-  onFileChange(step: Step, ev: Event){
+  pickConnect() {
+    this.connecting = true;
+    this.api.connectToApi().subscribe(ok => {
+      this.connecting = false;
+      if (ok) {
+        this.api.mode.set('api');
+        this.router.navigateByUrl('/dashboard');
+      } else {
+        alert('No se pudo conectar con la API');
+      }
+    });
+  }
+
+  onFileChange(step: Step, ev: Event) {
     const input = ev.target as HTMLInputElement;
-    const file = input.files?.[0]; if(!file) return;
+    const file = input.files?.[0];
+    if (!file) return;
     step.file = file; step.status = 'pendiente'; step.msg = undefined;
+    this._refresh();
   }
-   goDashboard(){
-    // Ya estás en modo 'upload': el backend servirá los temporales.
-    this.router.navigateByUrl('/');
-  }
-  send(step: Step){
-  if(!step.file){ step.status='error'; step.msg='Seleccione un archivo'; return; }
 
-  this.api.upload(step.key, step.file).subscribe((res: UploadResult)=>{
-    if (res.ok){
-      step.status = 'ok';
-      step.msg = 'Cargado y validado';
-    } else {
-      step.status = 'error';
-      step.msg = res.error || 'Error al validar';
+  goDashboard() {
+    this.router.navigateByUrl('/dashboard');
+  }
+
+  send(step: Step) {
+    if (!step.file) { this._mark(step, 'error', 'Seleccione un archivo'); return; }
+    if (!step.file.name.toLowerCase().endsWith('.json')) {
+      this._mark(step, 'error', 'Solo se acepta .json'); return;
     }
-    this.steps.update(v => [...v]);
-  });
-}
+    this.uploading = true;
+    this._mark(step, 'pendiente', 'Subiendo…');
+
+    this.api.upload(step.key, step.file).subscribe((res: UploadResult) => {
+      this.uploading = false;
+      if (res.ok) this._mark(step, 'ok', 'Cargado y validado');
+      else this._mark(step, 'error', res.error || 'Error al validar');
+    });
+  }
+
+  // helpers
+  private _mark(step: Step, status: Status, msg?: string) {
+    step.status = status; step.msg = msg; this._refresh();
+  }
+  private _refresh() { this.steps.update(v => [...v]); }
+
 }

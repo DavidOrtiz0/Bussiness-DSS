@@ -3,9 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Sidebar } from '../sidebar/sidebar';
 import { AppChart } from '../chart/chart';
-import { DataService } from '../../services/data.service';
-import { inject } from '@angular/core';
-import { ApiService } from '../../services/api.service';
+
+import { DataService, LocationRes, GapsRes, TrendsRes } from '../../services/data.service';
+
+type TabKey = 'ubicacion' | 'brechas' | 'tendencias';
+type PointIdx = { s: number; i: number };
+
 
 @Component({
   selector: 'app-dashboard',
@@ -15,7 +18,6 @@ import { ApiService } from '../../services/api.service';
   styleUrl: './dashboard.css'
 })
 export class Dashboard {
-  api = inject(ApiService);
 
   kpis = [
     { title: 'Negocios', value: 0 },
@@ -23,42 +25,82 @@ export class Dashboard {
     { title: 'Reseñas', value: 0 }
   ];
 
-  tabs = [
-    { key: 'ubicacion', label: 'Ubicación' },
-    { key: 'brechas', label: 'Brechas' },
-    { key: 'tendencias', label: 'Tendencias' }
-  ];
-  active: 'ubicacion'|'brechas'|'tendencias' = 'ubicacion';
 
-  city = ''; category = ''; topN = 10;
+  tabs: ReadonlyArray<{ key: TabKey; label: string }> = [
+    { key: 'ubicacion', label: 'Ubicación' },
+    { key: 'brechas',   label: 'Brechas' },
+    { key: 'tendencias',label: 'Tendencias' }
+  ] as const;
+
+  active: TabKey = 'ubicacion';
+
+  // SIN valores por defecto
+  city = '';
+  category = '';
+  topN = 10;
 
   chart = { labels: [] as string[], datasets: [] as any[] };
 
-  constructor(private ds: DataService) { this.refrescar(); }
+  constructor(private ds: DataService) {
+    this.refrescar();
+  }
 
-  setTab(k: any){ this.active = k; this.refrescar(); }
+  setTab(k: TabKey){ this.active = k; this.refrescar(); }
+
+  private setKpis(totalBiz = 0, totalCities = 0, totalReviews = 0){
+    this.kpis[0].value = totalBiz;
+    this.kpis[1].value = totalCities;
+    this.kpis[2].value = totalReviews;
+  }
 
   refrescar(){
+    const hasFilters = !!this.city || !!this.category;
+
+    // KPIs generales (ligeros) cada vez
+    this.ds.getKpis(hasFilters ? {city:this.city, category:this.category} : {})
+      .subscribe(k => this.setKpis(k.totalBusinesses, k.totalCities, k.totalReviews));
+
     if (this.active === 'ubicacion'){
-      this.ds.getUbicacion(this.city, this.category).subscribe(r=>{
-        const idx = r.score.map((s,i)=>({s,i})).sort((a,b)=>b.s-a.s).slice(0,this.topN).map(x=>x.i);
-        this.chart.labels = idx.map(i=> r.labels[i]);
+      const src = hasFilters
+        ? this.ds.getUbicacion(this.city, this.category)
+        : this.ds.getUbicacionGeneral(this.topN);
+
+      src.subscribe((r: LocationRes)=>{
+        const idx: number[] = r.score
+          .map((s: number, i: number): PointIdx => ({ s, i }))
+          .sort((a: PointIdx, b: PointIdx) => b.s - a.s)
+          .slice(0, this.topN)
+          .map((x: PointIdx) => x.i);
+
+        this.chart.labels = idx.map(i => r.labels[i] ?? '');
         this.chart.datasets = [
-          { label:'Score oportunidad', data: idx.map(i=> r.score[i]) }
+          { label:'Score oportunidad', data: idx.map(i => r.score[i] ?? 0) }
         ];
       });
     }
+
     if (this.active === 'brechas'){
-      this.ds.getBrechas(this.city).subscribe(r=>{
-        this.chart.labels = r.labels.slice(0,this.topN);
+      const src = hasFilters
+        ? this.ds.getBrechas(this.city)
+        : this.ds.getBrechasGeneral(this.topN);
+
+      src.subscribe((r: GapsRes)=>{
+        const N = this.topN;
+        this.chart.labels = r.labels.slice(0, N);
         this.chart.datasets = [
-          { label:'Oferta',  data: r.oferta.slice(0,this.topN)  },
-          { label:'Demanda', data: r.demanda.slice(0,this.topN) }
+          { label:'Oferta',  data: r.oferta.slice(0, N)  },
+          { label:'Demanda', data: r.demanda.slice(0, N) }
         ];
       });
     }
+
     if (this.active === 'tendencias'){
-      this.ds.getTendencias(this.city, this.category).subscribe(r=>{
+      const src = hasFilters
+        ? this.ds.getTendencias(this.city, this.category)
+        : this.ds.getTendenciasGeneral();
+
+      src.subscribe((r: TrendsRes)=>{
+
         this.chart.labels = r.labels;
         this.chart.datasets = [
           { label:'Reseñas/mes', data: r.reseñas },
