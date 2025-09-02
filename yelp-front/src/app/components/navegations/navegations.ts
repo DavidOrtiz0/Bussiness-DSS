@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SupportService } from '../../services/support.service';
 
 
 
@@ -12,5 +13,6 @@ import { RouterLink } from '@angular/router';
   styleUrl: './navegations.css'
 })
 export class Navegations {
-
+  constructor(private support: SupportService) {}
+  openSupport(ev: Event){ ev.preventDefault(); this.support.openPanel(); }
 }
