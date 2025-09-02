@@ -200,5 +200,6 @@ export class DataService {
       }),
       catchError(() => of<TrendsRes>({ labels: [], reseñas: [], rating: [] }))
     );
+
   }
 }

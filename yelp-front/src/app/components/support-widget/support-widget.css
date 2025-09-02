@@ -1,0 +1,84 @@
+:host{
+  /* Paleta */
+  --c1:#CEACEE; --c2:#A8B8F0; --c3:#8B5EEA; --c4:#9AC8EE; --c5:#5188E6; --c6:#565EE8;
+  --text:#2b3050;
+  --btn-primary-bg: var(--c6);
+  --btn-secondary-bg: var(--c3);
+  --btn-text:#fff;
+}
+
+/* Overlay centrado */
+.support-overlay{
+  position: fixed; inset: 0; z-index: 2000;
+  display: grid; place-items: center;
+  background:
+    radial-gradient(1200px 800px at 15% 10%, rgba(206,172,238,.35), transparent 60%),
+    radial-gradient(1200px 800px at 85% 90%, rgba(81,136,230,.35), transparent 60%),
+    linear-gradient(180deg, rgba(154,200,238,.30), rgba(171,184,240,.30));
+  backdrop-filter: blur(6px);
+  padding: 16px;
+  overflow: hidden; /* sin scroll */
+}
+
+/* Panel “glass”, sin overflow; se escala si no cabe */
+.support-panel{
+  width: min(560px, 95vw);
+  border-radius: 20px;
+  color: var(--text);
+  background: linear-gradient(135deg, rgba(168,184,240,.92), rgba(86,94,232,.06));
+  border: 1px solid rgba(168,184,240,.55);
+  box-shadow: 0 10px 30px rgba(86,94,232,.25), 0 2px 8px rgba(0,0,0,.06);
+  transform-origin: center;
+  overflow: clip;
+}
+/* Escala progresiva según altura de ventana */
+@media (max-height:900px){ .support-panel{ transform: scale(.97); } }
+@media (max-height:840px){ .support-panel{ transform: scale(.94); } }
+@media (max-height:780px){ .support-panel{ transform: scale(.90); } }
+@media (max-height:720px){ .support-panel{ transform: scale(.86); } }
+@media (max-height:660px){ .support-panel{ transform: scale(.82); } }
+
+/* Título color sólido de la paleta */
+.support-header h6{
+  color: var(--c6);
+  font-weight: 700;
+}
+
+/* Controles */
+.form-label{ opacity:.85; }
+.form-control, .form-select{
+  border-radius: 12px;
+  border: 1px solid rgba(86,94,232,.25);
+  background: rgba(255,255,255,.95);
+  padding: .55rem .75rem;
+}
+.form-control:focus, .form-select:focus{
+  border-color: var(--c5);
+  box-shadow: 0 0 0 .25rem rgba(81,136,230,.25);
+}
+textarea.form-control{ min-height: 72px; }
+
+/* Compactar separación vertical */
+.support-panel .row.g-2{ --bs-gutter-y: .5rem; }
+
+/* Botones tono único con contraste */
+.btn-primary{
+  background: var(--btn-primary-bg);
+  color: var(--btn-text);
+  border: none;
+  box-shadow: 0 6px 14px rgba(0,0,0,.15);
+}
+.btn-primary:hover{ filter: brightness(1.05); }
+
+.btn-outline-secondary{
+  background: var(--btn-secondary-bg);
+  color: var(--btn-text);
+  border: none;
+}
+.btn-outline-secondary:hover{ filter: brightness(1.05); }
+
+.btn:disabled{ opacity:.6; pointer-events:none; }
+
+/* Estados de error */
+.is-invalid{ border-color:#b3261e !important; }
+.invalid-feedback{ color:#b3261e; }

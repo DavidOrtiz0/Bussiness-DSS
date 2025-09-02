@@ -1,10 +1,12 @@
 import { Component, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { Router, RouterLink } from '@angular/router';
 import { ApiService, UploadResult, Collection } from '../../services/api.service';
 
 type Status = 'pendiente' | 'ok' | 'error';
 type Step = { key: Collection; label: string; status: Status; msg?: string; file?: File };
+
 
 @Component({
   selector: 'app-file-upload',
@@ -12,9 +14,11 @@ type Step = { key: Collection; label: string; status: Status; msg?: string; file
   imports: [CommonModule, RouterLink],
   templateUrl: './file-upload.html',
   styleUrls: ['./file-upload.css'],
+
 })
 export class FileUpload {
   constructor(private api: ApiService, private router: Router) {}
+
 
   view = signal<'menu' | 'wizard'>('menu');
   connecting = false;
@@ -80,4 +84,5 @@ export class FileUpload {
     step.status = status; step.msg = msg; this._refresh();
   }
   private _refresh() { this.steps.update(v => [...v]); }
+
 }

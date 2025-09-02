@@ -1,3 +1,4 @@
+
 // src/app/app.routes.ts
 import { Routes } from '@angular/router';
 import { FileUpload } from './components/file-upload/file-upload';
@@ -8,4 +9,5 @@ export const routes: Routes = [
   { path: 'upload', component: FileUpload },
   { path: 'dashboard', component: Dashboard },
   { path: '**', redirectTo: 'upload' }
+
 ];

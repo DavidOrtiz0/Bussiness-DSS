@@ -1,3 +1,4 @@
+
 import {
   Component, Input, OnChanges, OnDestroy, AfterViewInit,
   ViewChild, ElementRef, inject, PLATFORM_ID
@@ -78,4 +79,5 @@ export class AppChart implements AfterViewInit, OnChanges, OnDestroy {
     this.chart?.destroy();
     this.chart = new Chart(ctx, cfg);
   }
+
 }

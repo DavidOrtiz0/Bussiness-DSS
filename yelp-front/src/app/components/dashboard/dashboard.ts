@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Sidebar } from '../sidebar/sidebar';
 import { AppChart } from '../chart/chart';
+
 import { DataService, LocationRes, GapsRes, TrendsRes } from '../../services/data.service';
 
 type TabKey = 'ubicacion' | 'brechas' | 'tendencias';
 type PointIdx = { s: number; i: number };
+
 
 @Component({
   selector: 'app-dashboard',
@@ -16,11 +18,13 @@ type PointIdx = { s: number; i: number };
   styleUrl: './dashboard.css'
 })
 export class Dashboard {
+
   kpis = [
     { title: 'Negocios', value: 0 },
     { title: 'Ciudades', value: 0 },
     { title: 'Reseñas', value: 0 }
   ];
+
 
   tabs: ReadonlyArray<{ key: TabKey; label: string }> = [
     { key: 'ubicacion', label: 'Ubicación' },
@@ -96,6 +100,7 @@ export class Dashboard {
         : this.ds.getTendenciasGeneral();
 
       src.subscribe((r: TrendsRes)=>{
+
         this.chart.labels = r.labels;
         this.chart.datasets = [
           { label:'Reseñas/mes', data: r.reseñas },
