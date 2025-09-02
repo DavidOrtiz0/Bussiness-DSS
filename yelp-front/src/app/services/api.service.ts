@@ -1,14 +1,12 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
-import { Observable, of, OperatorFunction } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable, of, OperatorFunction, MonoTypeOperatorFunction } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 
 export type Collection = 'business' | 'review' | 'user' | 'tip' | 'checkin';
-
 type ApiOk<T> = { ok: true; data: T };
-type ApiErr   = { ok: false; error: string };
+type ApiErr = { ok: false; error: string };
 export type ApiResult<T> = ApiOk<T> | ApiErr;
-
 export type UploadResult = ApiResult<{ count?: number } | any>;
 
 @Injectable({ providedIn: 'root' })
@@ -18,68 +16,89 @@ export class ApiService {
 
   constructor(private http: HttpClient) {}
 
-  // Health/smoke: comprueba que el back responde y fija modo 'api'
+  // helper de log
+  #log(label: string): MonoTypeOperatorFunction<any> {
+    return tap({
+      next: (v) => console.log(`[API] ${label} OK:`, v),
+      error: (e) => console.error(`[API] ${label} ERR:`, e)
+    });
+  }
+
   connectToApi(): Observable<boolean> {
     const params = this.#withTemp(new HttpParams().set('limit', '1'));
     return this.http.get(`${this.base}/business`, { params }).pipe(
+      this.#log('GET /business?limit=1'),
       map(() => { this.mode.set('api'); return true; }),
       catchError(() => of(false))
     );
   }
 
-  // Upload a colecciones temporales
   upload(collection: Collection, file: File): Observable<UploadResult> {
-    const fd = new FormData();
-    fd.append('file', file);
-    return this.http.post<UploadResult>(`${this.base}/upload/${collection}`, fd)
-      .pipe(this.#catchApi<any>());
+    const fd = new FormData(); fd.append('file', file);
+    return this.http.post<UploadResult>(`${this.base}/upload/${collection}`, fd).pipe(
+      this.#log(`POST /upload/${collection}`),
+      this.#catchApi<any>()
+    );
   }
 
-  // ---- CRUD mínimos (por si los usas en otras vistas)
   listBusiness(query: Record<string, any>): Observable<ApiResult<any[]>> {
     const params = this.#withTemp(this.#toParams(query));
-    return this.http.get<ApiResult<any[]>>(`${this.base}/business`, { params })
-      .pipe(this.#catchApi<any[]>());
+    return this.http.get<ApiResult<any[]>>(`${this.base}/business`, { params }).pipe(
+      this.#log(`GET /business ${params.toString()}`),
+      this.#catchApi<any[]>()
+    );
   }
 
   getBusiness(id: string): Observable<ApiResult<any>> {
     const params = this.#withTemp();
-    return this.http.get<ApiResult<any>>(`${this.base}/business/${id}`, { params })
-      .pipe(this.#catchApi<any>());
+    return this.http.get<ApiResult<any>>(`${this.base}/business/${id}`, { params }).pipe(
+      this.#log(`GET /business/${id}`),
+      this.#catchApi<any>()
+    );
   }
 
   reviewsOfBusiness(businessId: string, limit = 50): Observable<ApiResult<any[]>> {
     const params = this.#withTemp(new HttpParams().set('limit', String(limit)));
     return this.http.get<ApiResult<any[]>>(
       `${this.base}/review/business/${businessId}`, { params }
-    ).pipe(this.#catchApi<any[]>());
+    ).pipe(
+      this.#log(`GET /review/business/${businessId}?${params.toString()}`),
+      this.#catchApi<any[]>()
+    );
   }
 
   avgRatingOfBusiness(businessId: string): Observable<ApiResult<{ avg: number }>> {
     const params = this.#withTemp();
     return this.http.get<ApiResult<{ avg: number }>>(
       `${this.base}/review/business/${businessId}/avg`, { params }
-    ).pipe(this.#catchApi<{ avg: number }>());
+    ).pipe(
+      this.#log(`GET /review/business/${businessId}/avg`),
+      this.#catchApi<{ avg: number }>()
+    );
   }
 
-  // ---- Endpoints de análisis (no temporales salvo que mode==='upload')
   getUbicacion(city: string, category: string) {
     const params = this.#withTemp(this.#toParams({ city, category }));
-    return this.http.get<any>(`${this.base}/analysis/location`, { params });
+    return this.http.get<any>(`${this.base}/analysis/location`, { params }).pipe(
+      this.#log(`GET /analysis/location?${params.toString()}`)
+    );
   }
 
   getBrechas(city: string) {
     const params = this.#withTemp(this.#toParams({ city }));
-    return this.http.get<any>(`${this.base}/analysis/gaps`, { params });
+    return this.http.get<any>(`${this.base}/analysis/gaps`, { params }).pipe(
+      this.#log(`GET /analysis/gaps?${params.toString()}`)
+    );
   }
 
   getTendencias(city: string, category: string) {
-    // Si tu back expone demand por business, aquí podrías resolver un business primero.
     const params = this.#withTemp(this.#toParams({ city, category }));
-    return this.http.get<any>(`${this.base}/analysis/demand`, { params });
+    return this.http.get<any>(`${this.base}/analysis/demand`, { params }).pipe(
+      this.#log(`GET /analysis/demand?${params.toString()}`)
+    );
   }
 
-  // ---- helpers
+  // helpers
   #withTemp(params = new HttpParams()): HttpParams {
     return this.mode() === 'upload' ? params.set('temp', 'true') : params;
   }
