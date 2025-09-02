@@ -34,12 +34,25 @@ export class ApiService {
   }
 
   upload(collection: Collection, file: File): Observable<UploadResult> {
-    const fd = new FormData(); fd.append('file', file);
-    return this.http.post<UploadResult>(`${this.base}/upload/${collection}`, fd).pipe(
-      this.#log(`POST /upload/${collection}`),
-      this.#catchApi<any>()
-    );
-  }
+  const fd = new FormData();
+  fd.append('file', file, file.name);
+
+
+  return this.http.post<any>(`${this.base}/upload/${collection}`, fd).pipe(
+    this.#log(`POST /upload/${collection}`),
+    map(res => {
+      if (res && res.message) {
+        // normalizamos la respuesta del back
+        return { ok: true, data: res } as UploadResult;
+      }
+      return { ok: false, error: res?.error || 'Respuesta inesperada' } as UploadResult;
+    }),
+    catchError((e: HttpErrorResponse) =>
+      of({ ok: false, error: e.error?.message ?? e.message ?? 'Error' } as UploadResult)
+    )
+  );
+}
+
 
   listBusiness(query: Record<string, any>): Observable<ApiResult<any[]>> {
     const params = this.#withTemp(this.#toParams(query));

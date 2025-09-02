@@ -1,0 +1,10 @@
+{"user_id":"u1","business_id":"b1","text":"Prueba el capuchino, es el mejor.","date":"2022-01-11 09:00:00","compliment_count":2}
+{"user_id":"u2","business_id":"b2","text":"Pide la pizza margarita.","date":"2022-01-16 20:30:00","compliment_count":1}
+{"user_id":"u3","business_id":"b3","text":"Los lunes hay descuentos en productos eco.","date":"2022-01-19 12:00:00","compliment_count":0}
+{"user_id":"u4","business_id":"b4","text":"Llega temprano que se llena rápido.","date":"2022-01-23 21:00:00","compliment_count":3}
+{"user_id":"u5","business_id":"b5","text":"Pregunta por la sección de novedades.","date":"2022-01-26 11:00:00","compliment_count":1}
+{"user_id":"u1","business_id":"b6","text":"Las clases de la mañana son tranquilas.","date":"2022-02-02 08:00:00","compliment_count":0}
+{"user_id":"u2","business_id":"b7","text":"Pregunta por las promociones de aceite.","date":"2022-02-06 09:00:00","compliment_count":0}
+{"user_id":"u3","business_id":"b8","text":"El sushi especial es espectacular.","date":"2022-02-11 20:00:00","compliment_count":4}
+{"user_id":"u4","business_id":"b9","text":"Solicita habitaciones con vista a la plaza.","date":"2022-02-16 13:00:00","compliment_count":2}
+{"user_id":"u5","business_id":"b10","text":"El sauna está incluido en el precio.","date":"2022-02-21 07:00:00","compliment_count":3}
