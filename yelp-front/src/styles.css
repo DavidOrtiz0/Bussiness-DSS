@@ -1,0 +1,22 @@
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+/* Fondo y “neumorfismo” del mockup */
+:root{
+  --bg:#bdefff;           /* turquesa claro */
+  --card:#ffffff;
+  --text:#27323a;
+  --shadow: 12px 12px 24px rgba(0,0,0,.12), -8px -8px 16px rgba(255,255,255,.6);
+  --radius:22px;
+}
+html,body{height:100%;}
+body{background: var(--bg); color: var(--text);}
+.neu-card{
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.badge-kpi{
+  background:#eef7ff; color:#4a7bbf;
+  border-radius: 12px; padding:6px 12px; font-weight:600;
+}
