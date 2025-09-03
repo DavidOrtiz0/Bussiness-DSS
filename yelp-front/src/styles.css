@@ -1,12 +1,12 @@
 @import "bootstrap/dist/css/bootstrap.min.css";
 @import "bootstrap-icons/font/bootstrap-icons.css";
 
-/* Fondo y “neumorfismo” del mockup */
+
 :root{
-  --bg:#bdefff;           /* turquesa claro */
+  --bg:#bdefff;           
   --card:#ffffff;
-  --text:#27323a;
-  --shadow: 12px 12px 24px rgba(0,0,0,.12), -8px -8px 16px rgba(22, 20, 20, 0.6);
+  --text:#0c223f;
+  --shadow: 12px 12px 24px rgba(0,0,0,.12), -8px -8px 16px rgba(196, 211, 233, 0.6);
   --radius:22px;
 }
 html,body{height:100%;}

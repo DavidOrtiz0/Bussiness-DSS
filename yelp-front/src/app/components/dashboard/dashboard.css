@@ -8,9 +8,13 @@
 
 /* Panel blanco que agrupa TODO el dashboard */
 .dash-surface{
-  background: var(--surface);
-  border-radius: var(--radius);
-  box-shadow: var(--elev-4);   
+  border-radius: 20px;
+  color: var(--text);
+  background: linear-gradient(135deg, rgba(168,184,240,.92), rgba(86,94,232,.06));
+  border: 1px solid rgba(168,184,240,.55);
+  box-shadow: 0 10px 30px rgba(86,94,232,.25), 0 2px 8px rgba(0,0,0,.06);
+  transform-origin: center;
+  overflow: clip;
   margin: 24px auto;
   max-width: 1240px;
 }
@@ -20,7 +24,7 @@
   background: #fff;
   border: 1px solid rgba(86,94,232,.08);
   border-radius: 16px;
-  box-shadow: 10 2px 6px rgba(0,0,0,.04);
+  box-shadow: 5 2px 6px rgba(0,0,0,.04);
 }
 
 /* Tabs estilo dashboard */
