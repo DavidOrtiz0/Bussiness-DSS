@@ -1,1 +1,12 @@
-<p>sidebar works!</p>
+  <aside class="sb neu-card">
+   <button *ngFor="let it of items"
+        class="sb-btn"
+        [class.active]="isActive(it)"
+        [title]="it.label"
+        [attr.aria-label]="it.label"
+        (click)="onClick(it, $event)"
+        type="button">
+  <i class="bi" [ngClass]="it.icon"></i>
+  <span class="visually-hidden">{{it.label}}</span>
+</button>
+  </aside>
