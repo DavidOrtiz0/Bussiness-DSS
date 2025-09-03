@@ -1,1 +1,143 @@
 table td, table th { vertical-align: middle; }
+/* ====== Contexto del componente ====== */
+:host{
+  /* Paleta DSS (Pau) */
+  --c1:#CEACEE; --c2:#A8B8F0; --c3:#8B5EEA; --c4:#9AC8EE; --c5:#8B5EEA; --c6:#565EE8;
+  --text:#2b3050;
+
+  --stroke: rgba(86,94,232,.25);
+  --soft-bg: rgba(168,184,240,.10);
+}
+
+/* Títulos */
+h4,five,h5{
+  color: var(--text);
+}
+h4.fw-bold{ letter-spacing:.2px; }
+
+/* ====== Tarjetas ====== */
+.neu-card{
+  background: linear-gradient(135deg, rgba(255,255,255,.96), rgba(86,94,232,.05));
+  border: 1px solid var(--stroke);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(86,94,232,.18), 0 2px 8px rgba(0,0,0,.06);
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  box-shadow: 0 8px 20px rgba(0,0,0,.45);
+}
+.neu-card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(86,94,232,.22), 0 4px 10px rgba(0,0,0,.08);
+  border-color: rgba(86,94,232,.35);
+  
+}
+
+/* Párrafos secundarios */
+.text-muted{ color: #6b6f85 !important; }
+
+/* ====== Botones (solo dentro del componente) ====== */
+:host .btn{
+  border-radius: 12px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(86,94,232,.16);
+  transition: filter .15s ease, transform .04s ease, box-shadow .15s ease;
+}
+:host .btn:active{ transform: translateY(1px); }
+
+/* Primario = violeta deep */
+:host .btn.btn-primary{
+  background-color: var(--c6);
+  border-color: var(--c6);
+}
+:host .btn.btn-primary:hover{ filter: brightness(.95); }
+:host .btn.btn-primary:focus{ box-shadow: 0 0 0 .25rem rgba(86,94,232,.25); }
+
+/* Success = azul marca */
+:host .btn.btn-success{
+  background-color: var(--c5);
+  border-color: var(--c5);
+}
+:host .btn.btn-success:hover{ filter: brightness(.95); }
+:host .btn.btn-success:focus{ box-shadow: 0 0 0 .25rem rgba(81,136,230,.28); }
+
+/* Outline primary coherente */
+:host .btn.btn-outline-primary{
+  color: var(--c6);
+  border-color: var(--c6);
+}
+:host .btn.btn-outline-primary:hover{
+  color: #fff;
+  background-color: var(--c6);
+  border-color: var(--c6);
+}
+
+/* Botón light con borde suave */
+:host .btn.btn-light{
+  background: #fff;
+  border: 1px solid var(--stroke);
+}
+:host .btn.btn-light:hover{ filter: brightness(.98); }
+
+/* ====== Inputs ====== */
+:host .form-control{
+  border-radius: 12px;
+  background: linear-gradient(0deg, rgba(255,255,255,.9), rgba(255,255,255,.9));
+  border: 1px solid var(--stroke);
+}
+:host .form-control:focus{
+  border-color: var(--c4);
+  box-shadow: 0 0 0 .25rem rgba(154,200,238,.35);
+}
+
+/* ====== Tabla ====== */
+:host .table{
+  --bs-table-bg: transparent;
+  --bs-table-striped-bg: rgba(168,184,240,.10);
+  --bs-table-striped-color: var(--text);
+  color: var(--text);
+  margin-bottom: .5rem;
+}
+:host .table thead th{
+  border-bottom: 2px solid var(--stroke);
+  font-weight: 700;
+  color: var(--text);
+  background: linear-gradient(180deg, rgba(168,184,240,.12), rgba(168,184,240,.06));
+}
+:host .table tbody td{
+  vertical-align: middle;
+  border-top-color: rgba(86,94,232,.12);
+}
+
+/* ====== Badges alineadas a la gama ====== */
+:host .badge.bg-secondary{ background-color: var(--c2) !important; color:#1f2545; }
+:host .badge.bg-success{ background-color: var(--c5) !important; }
+:host .badge.bg-warning{ background-color: #FFE08A !important; color:#3b2f00 !important; }
+:host .badge.bg-danger{ background-color: #F25F5C !important; }
+
+/* ====== Layout menor ====== */
+@media (max-width: 576px){
+  .neu-card{ padding: 1.25rem !important; }
+  :host .table{ font-size: .925rem; }
+}
+
+:host .btn.btn-primary,
+:host .btn.btn-success {
+  background-color: #8B5EEA !important;
+  border-color: #8B5EEA !important;
+  color: #fff !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,.25);
+}
+
+:host .btn.btn-primary:hover,
+:host .btn.btn-success:hover {
+  filter: brightness(0.92);
+}
+:host .btn.btn-outline-primary {
+  background-color: #b49be9 !important;
+  border-color: #b3a0db !important;
+  color: #fff !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,.25);
+}
+
+:host .btn.btn-outline-primary:hover {
+  filter: brightness(0.92);
+}
