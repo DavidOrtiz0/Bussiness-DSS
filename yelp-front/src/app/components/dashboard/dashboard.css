@@ -1,1 +1,37 @@
-.container{max-width:1200px;}
+:host{
+  --surface:#fff;
+  --radius:24px;
+  --shadow: 0 12px 30px rgba(86,94,232,.18), 0 2px 8px rgba(0,0,0,.06);
+  --accent:#8B5EEA;      /* violeta de tu paleta */
+  --accent-2:#565EE8;
+}
+
+/* Panel blanco que agrupa TODO el dashboard */
+.dash-surface{
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--elev-4);   
+  margin: 24px auto;
+  max-width: 1240px;
+}
+
+/* Cards coherentes */
+.neu-card{
+  background: #fff;
+  border: 1px solid rgba(86,94,232,.08);
+  border-radius: 16px;
+  box-shadow: 10 2px 6px rgba(0,0,0,.04);
+}
+
+/* Tabs estilo dashboard */
+.nav-pills .nav-link{
+  color: var(--accent-2);
+  border-radius: 999px;
+}
+.nav-pills .nav-link.active{
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Ajustes menores */
+.container{ max-width: 1200px; }
