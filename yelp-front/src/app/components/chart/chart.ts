@@ -44,40 +44,47 @@ export class AppChart implements AfterViewInit, OnChanges, OnDestroy {
     this.chart?.destroy();
   }
 
-  private buildOrUpdate(): void {
-    if (!this.viewReady || !this.canvas) return;
+    private buildOrUpdate(): void {
+  if (!this.viewReady || !this.canvas) return;
 
-    const ctx = this.canvas.nativeElement.getContext('2d');
-    if (!ctx) return;
+  const ctx = this.canvas.nativeElement.getContext('2d');
+  if (!ctx) return;
 
-    const chartType: ChartType = this.type === 'bar-horizontal' ? 'bar' : this.type;
+  const chartType: ChartType = this.type === 'bar-horizontal' ? 'bar' : this.type;
 
-    const ds: ChartDataset<ChartType, number[]>[] = this.datasets.map(d => ({
-      label: d.label,
-      data: d.data,
-      backgroundColor: d.backgroundColor ?? 'rgba(54,162,235,.6)',
-      borderColor: d.borderColor
-    }));
+  // paleta de colores
+  const palette = [
+    'rgba(250, 8, 29, 0.6)',   // verde agua
+    'rgba(104, 240, 41, 0.56)',   // rojo
+    
+  ];
 
-    const cfg: ChartConfiguration<ChartType, number[], unknown> = {
-      type: chartType,
-      data: {
-        labels: this.labels,
-        datasets: ds
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        indexAxis: this.type === 'bar-horizontal' ? 'y' : 'x',
-        scales: { y: { beginAtZero: true } },
-        plugins: { legend: { position: 'bottom' } },
-        ...this.options
-      }
-    };
+  const ds: ChartDataset<ChartType, number[]>[] = this.datasets.map((d, i) => ({
+    label: d.label,
+    data: d.data,
+    backgroundColor: d.backgroundColor ?? palette[i % palette.length],
+    borderColor: d.borderColor ?? palette[i % palette.length].replace('0.6', '1'),
+    borderWidth: 1
+  }));
 
-    // recrea para evitar problemas de tipos en updates in-place
-    this.chart?.destroy();
-    this.chart = new Chart(ctx, cfg);
-  }
+  const cfg: ChartConfiguration<ChartType, number[], unknown> = {
+    type: chartType,
+    data: {
+      labels: this.labels,
+      datasets: ds
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: this.type === 'bar-horizontal' ? 'y' : 'x',
+      scales: { y: { beginAtZero: true } },
+      plugins: { legend: { position: 'bottom' } },
+      ...this.options
+    }
+  };
 
+  this.chart?.destroy();
+  this.chart = new Chart(ctx, cfg);
 }
+}
+
