@@ -1,0 +1,52 @@
+:host{
+  /* Paleta */
+  --c1:#CEACEE; --c2:#A8B8F0; --c3:#8B5EEA; --c4:#9AC8EE; --c5:#5188E6; --c6:#565EE8;
+  --shadow: 0 14px 34px rgba(86,94,232,.25), 0 6px 14px rgba(0,0,0,.08);
+}
+
+.help-root{ position:fixed; right:18px; bottom:18px; z-index:1100; }
+
+/* Botón flotante */
+.help-btn{
+  width:56px; height:56px; border-radius:999px; border:0; cursor:pointer;
+  color:#fff; font-weight:700; font-size:22px; line-height:1;
+  background: linear-gradient(135deg, var(--c5), var(--c6));
+  box-shadow: var(--shadow);
+  transition: transform .12s, filter .12s;
+}
+.help-btn:hover{ transform: translateY(-1px); filter: brightness(1.05); }
+
+/* Panel */
+.help-panel{
+  position:absolute; right:0; bottom:68px; width:min(360px,92vw);
+  border-radius:18px; padding:14px 14px 12px;
+  background:
+    linear-gradient(180deg, rgba(168,184,240,.25), rgba(154,200,238,.20)),
+    #fff;
+  border:1px solid rgba(168,184,240,.55);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(6px);
+  color:#2b3050;
+  animation: hb-enter .14s ease-out;
+}
+@keyframes hb-enter{ from{ transform: translateY(6px); opacity:0 } to{ transform:none; opacity:1 } }
+
+/* Header */
+.help-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.help-header strong{ color: var(--c6); font-weight:700; }
+.help-header .x{ border:0; background:transparent; font-size:20px; line-height:1; cursor:pointer; color:#556; }
+
+/* Lista */
+.help-list{ margin:0 0 10px; padding:0; list-style:none; }
+.help-list li{ position:relative; padding-left:18px; margin:.35rem 0; }
+.help-list li::before{
+  content:""; position:absolute; left:0; top:.5em;
+  width:8px; height:8px; border-radius:999px; background: var(--c5);
+}
+
+/* Botón del panel */
+.btn-primary{
+  background: var(--c6); border:none; color:#fff;
+  box-shadow: 0 6px 14px rgba(0,0,0,.12);
+}
+.btn-primary:hover{ filter:brightness(1.06); }
