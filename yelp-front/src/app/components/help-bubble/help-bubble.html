@@ -1,0 +1,19 @@
+<div class="help-root">
+    <button class="help-btn" type="button" aria-label="Ayuda" (click)="open = !open">?</button>
+
+    <div class="help-panel neu-card" *ngIf="open">
+      <div class="help-header">
+        <strong> Bienvenido al panel de ayuda... Ten en cuenta lo siguiente:</strong>
+        <button class="x" (click)="open=false" aria-label="Cerrar">×</button>
+      </div>
+
+      <ul class="help-list">
+        <li><b>Carga de datos</b>: Debes cargar tus datos desde la ventana de carga para poder realizar tu analisis personalizado</li>
+        <li><b>Filtros</b>: Cada vez que escribas o selecciones un filtro debes dar clic en "Aplicar" para ver su resultado.</li>
+        <li><b>Pestañas</b>: Cada pestaña te enseñará un tipo de analisis: de ubicación, de brechas o tendencias.</li>
+        <li><b>Support</b>: En caso de algun problema reportalo desde nuestra ventana de soporte.</li>
+      </ul>
+
+      <button class="btn btn-primary w-100" (click)="open=false">Entendido</button>
+    </div>
+  </div>

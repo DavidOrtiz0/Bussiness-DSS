@@ -5,6 +5,7 @@ import { Sidebar } from '../sidebar/sidebar';
 import { AppChart } from '../chart/chart';
 
 import { DataService, LocationRes, GapsRes, TrendsRes } from '../../services/data.service';
+import { HelpBubble } from "../help-bubble/help-bubble";
 
 type TabKey = 'ubicacion' | 'brechas' | 'tendencias';
 type PointIdx = { s: number; i: number };
@@ -13,7 +14,7 @@ type PointIdx = { s: number; i: number };
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, Sidebar, AppChart],
+  imports: [CommonModule, FormsModule, Sidebar, AppChart, HelpBubble],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
