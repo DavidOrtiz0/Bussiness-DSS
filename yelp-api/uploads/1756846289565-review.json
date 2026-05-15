@@ -1,0 +1,10 @@
+{"review_id":"r1","user_id":"u1","business_id":"b1","stars":5,"useful":3,"funny":1,"cool":2,"text":"Excelente café y atención rápida.","date":"2022-01-12 09:00:00"}
+{"review_id":"r2","user_id":"u2","business_id":"b2","stars":4,"useful":1,"funny":0,"cool":1,"text":"La pizza muy buena, pero algo lenta la entrega.","date":"2022-01-15 20:00:00"}
+{"review_id":"r3","user_id":"u3","business_id":"b3","stars":3,"useful":0,"funny":0,"cool":0,"text":"Tienda pequeña con productos interesantes.","date":"2022-01-18 17:00:00"}
+{"review_id":"r4","user_id":"u1","business_id":"b4","stars":5,"useful":4,"funny":2,"cool":5,"text":"Ambiente increíble, buena música.","date":"2022-01-22 23:00:00"}
+{"review_id":"r5","user_id":"u4","business_id":"b5","stars":4,"useful":1,"funny":0,"cool":1,"text":"Gran selección de libros, muy recomendado.","date":"2022-01-25 12:00:00"}
+{"review_id":"r6","user_id":"u2","business_id":"b6","stars":5,"useful":2,"funny":1,"cool":3,"text":"Clases de yoga excelentes.","date":"2022-02-01 18:00:00"}
+{"review_id":"r7","user_id":"u3","business_id":"b7","stars":2,"useful":0,"funny":0,"cool":0,"text":"Servicio lento en el taller.","date":"2022-02-05 10:00:00"}
+{"review_id":"r8","user_id":"u5","business_id":"b8","stars":5,"useful":3,"funny":2,"cool":4,"text":"Comida japonesa deliciosa.","date":"2022-02-10 21:00:00"}
+{"review_id":"r9","user_id":"u4","business_id":"b9","stars":4,"useful":2,"funny":0,"cool":1,"text":"Habitaciones limpias y cómodas.","date":"2022-02-15 14:00:00"}
+{"review_id":"r10","user_id":"u5","business_id":"b10","stars":5,"useful":5,"funny":1,"cool":2,"text":"Gimnasio completo y moderno.","date":"2022-02-20 08:00:00"}

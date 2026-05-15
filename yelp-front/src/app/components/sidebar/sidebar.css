@@ -1,0 +1,29 @@
+:host{
+  --violet:#8B5EEA;   /* violeta de la paleta */
+  --icon:#ffffff;     /* color de iconos */
+}
+
+.sb{
+  position: fixed; left:16px; top:120px; width:56px;
+  display:flex; flex-direction:column; gap:14px; align-items:center;
+  border-radius:18px; padding:14px; z-index:10;
+
+  background: var(--violet) !important;   /* sobrepone neu-card */
+  box-shadow: 0 10px 30px rgba(86,94,232,.25), 0 2px 8px rgba(0,0,0,.06);
+}
+
+.sb-btn{
+  width:40px; height:40px; border-radius:12px; border:0; cursor:pointer;
+  display:grid; place-items:center; background: transparent;
+  transition: background .12s ease, transform .12s ease;
+}
+.sb-btn i{ font-size:1.2rem; color: var(--icon) !important; }
+.sb-btn:hover{ background: rgba(255,255,255,.16); transform: translateY(-1px); }
+.sb-btn.active{ background: rgba(255,255,255,.28); }
+
+.visually-hidden{
+  position:absolute !important; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+
+@media (max-width: 991px){ .sb{ display:none; } }

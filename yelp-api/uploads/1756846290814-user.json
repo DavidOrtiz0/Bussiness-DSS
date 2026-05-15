@@ -1,0 +1,10 @@
+{"user_id":"u1","name":"Ana","review_count":10,"yelping_since":"2020-01-01 10:00:00","useful":15,"funny":2,"cool":8,"elite":"2020","friends":null}
+{"user_id":"u2","name":"Luis","review_count":20,"yelping_since":"2019-03-15 09:00:00","useful":25,"funny":5,"cool":12,"elite":"2019","friends":null}
+{"user_id":"u3","name":"Marta","review_count":5,"yelping_since":"2021-06-10 14:00:00","useful":8,"funny":1,"cool":3,"elite":"","friends":null}
+{"user_id":"u4","name":"Carlos","review_count":15,"yelping_since":"2018-09-20 08:00:00","useful":18,"funny":2,"cool":7,"elite":"2018","friends":null}
+{"user_id":"u5","name":"Elena","review_count":12,"yelping_since":"2020-11-05 19:00:00","useful":22,"funny":3,"cool":9,"elite":"2020","friends":null}
+{"user_id":"u6","name":"Javier","review_count":7,"yelping_since":"2021-01-02 12:00:00","useful":10,"funny":0,"cool":4,"elite":"","friends":null}
+{"user_id":"u7","name":"Lucía","review_count":18,"yelping_since":"2017-07-07 10:00:00","useful":30,"funny":4,"cool":15,"elite":"2017","friends":null}
+{"user_id":"u8","name":"Pedro","review_count":3,"yelping_since":"2022-02-01 09:00:00","useful":5,"funny":1,"cool":2,"elite":"","friends":null}
+{"user_id":"u9","name":"Sofía","review_count":9,"yelping_since":"2020-05-14 11:00:00","useful":12,"funny":2,"cool":6,"elite":"","friends":null}
+{"user_id":"u10","name":"Diego","review_count":25,"yelping_since":"2016-04-01 08:00:00","useful":40,"funny":6,"cool":20,"elite":"2016","friends":null}
